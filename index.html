@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tania Biswas - Falling Words to Heart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #030305;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .caption-container {
+            margin-top: 10px;
+            text-align: center;
+            z-index: 10;
+            width: 90%;
+            max-width: 380px;
+        }
+
+        .title {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+
+        .subtitle {
+            color: #ff668c;
+            font-size: 13px;
+            letter-spacing: 1px;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .heart-icon {
+            color: #ff3366;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fallingHeartCanvas"></canvas>
+
+    <div class="caption-container">
+        <div class="title">I <span class="heart-icon">❤️</span> YOU</div>
+        <div class="subtitle">THIS IS MY LOVE for Tania Biswas <span class="heart-icon">❤️</span></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('fallingHeartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight * 0.62;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const words = ['i love you', 'forever', 'me & you', 'always', 'sweetheart', 'je t\'aime', 'te amo', 'my love', 'xoxo'];
+        const particles = [];
+        const numParticles = 140;
+
+        for (let i = 0; i < numParticles; i++) {
+            const t = Math.random() * Math.PI * 2;
+            const hx = 16 * Math.pow(Math.sin(t), 3);
+            const hy = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+            
+            const scale = Math.min(canvas.width, canvas.height) / 22;
+            const targetX = canvas.width / 2 + (hx * scale * 0.8);
+            const targetY = canvas.height / 2 + (hy * scale * 0.8);
+
+            particles.push({
+                word: words[Math.floor(Math.random() * words.length)],
+                x: targetX,
+                y: -Math.random() * canvas.height,
+                targetY: targetY,
+                vy: 2 + Math.random() * 3,
+                reached: false
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.font = 'bold 11px "Courier New", monospace';
+            ctx.fillStyle = '#ff3366';
+            ctx.shadowColor = '#ff3366';
+            ctx.shadowBlur = 5;
+
+            particles.forEach(p => {
+                if (!p.reached) {
+                    p.y += p.vy;
+                    if (p.y >= p.targetY) {
+                        p.y = p.targetY;
+                        p.reached = true;
+                    }
+                }
+
+                ctx.fillText(p.word, p.x, p.y);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
